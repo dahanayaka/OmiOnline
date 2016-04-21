@@ -16,6 +16,9 @@ public class omiOnline extends HttpServlet {
     public static int nextGame = 1 , nextPlayer = 0;
     public Omi game = null;
 
+
+    // for first log in we use get, for card selecting in the game we use posts
+    //for login
     public void doget(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -30,13 +33,24 @@ public class omiOnline extends HttpServlet {
             if (games.containsKey(nextGame)) game = games.get(nextGame);
             else game = new Omi();
         }
+        response.addCookie(ckid);
+        response.addCookie(ckPlayer);
         String reply;
-
+        //PrintWriter writer1;
         if((nextPlayer+1)>3) {
-            reply = "{\"cards\":[],\"showHand\" : false, \"showCards\" : false , \"message\" : \"Waiting for others to connect. Only" + nextPlayer + " players connected ..\"}";
+
+            reply = game.deal(3);
 
             writer.write(reply);
             writer.flush();
+
+            for (int i = 0; i < 4 && game.players[i] != null; i++) {
+                HttpServletResponse temp = game.players[i];
+                writer = temp.getWriter();
+                reply = game.deal(i);
+                writer.write(reply);
+                writer.flush();
+            }
 
             }
         else {
@@ -46,15 +60,16 @@ public class omiOnline extends HttpServlet {
             writer.write(reply);
             writer.flush();
 
+            for (int i = 0; i < 4 && game.players[i] != null; i++) {
+                HttpServletResponse temp = game.players[i];
+                writer = temp.getWriter();
+                writer.write(reply);
+                writer.flush();
+            }
 
         }
 
-        for (int i = 0; i < 4 && game.players[i] != null; i++) {
-            HttpServletResponse temp = game.players[i];
-            writer = temp.getWriter();
-            writer.write(reply);
-            writer.flush();
-        }
+
 
         game.addPlayer(response, nextPlayer);
 

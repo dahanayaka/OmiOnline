@@ -8,14 +8,14 @@ import java.util.List;
 
 public class Omi{
 
+
 	public HttpServletResponse[] players = new HttpServletResponse[4];
 
-	int []p1 = new int[13];
-	int []p2 = new int[13];
-	int []p3 = new int[13];
-	int []p4 = new int[13];
+	int [][]hands = new int[4][13];
+
 
 	int trumph;
+	String trumphName;
 
 	private final HashMap<String, Integer> cardsMapToNumber = new HashMap<String, Integer>();
 	private final HashMap<Integer, String> cardsMapTostring = new HashMap< Integer, String>();
@@ -46,8 +46,8 @@ public class Omi{
 
 	public static void main(String [] argv){
 		Omi g1 = new Omi();
-		Integer []pack = g1.shuffle();
-		g1.deal(pack);	
+
+
 	}
 	
 
@@ -67,20 +67,32 @@ public class Omi{
 		return ans;
 	}
 
-	public void deal(Integer[] pack){
+	public String deal(int player){
+		Integer []pack = this.shuffle();
+
+		String jsonMessage = "{\"cards\":[";
+
 		for (int i=0;i<52;i+=4){
-			p1[i] = pack[i];
-			p2[i] = pack[i+1];
-			p3[i] = pack[i+2];
-			p4[i] = pack[i+3];
+			hands[0][i/4] = pack[i];
+			hands[1][i/4] = pack[i+1];
+			hands[2][i/4] = pack[i+2];
+			hands[3][i/4] = pack[i+3];
 		}
 
 		trumph = pack[51]/100;
+		if(trumph==1) trumphName = "Diamond";
+		if(trumph==2) trumphName = "Clubs";
+		if(trumph==3) trumphName = "Hearts";
+		if(trumph==4) trumphName = "Spades";
 
-		System.out.println("Player 1's hand:-");
+		//System.out.println("Player 1's hand:-");
 		for(int i=0;i<13;i++){
-			System.out.printf("%d ",p1[i]);
+			jsonMessage = jsonMessage + "{\"image\": \""+ cardsMapTostring.get(hands[player][i]) +"\" }";
+			if(i<12) jsonMessage = jsonMessage + ",";
 		}
+
+
+		/*
 		System.out.printf("\n\n");
 		System.out.println("Player 2's hand:-");
 		for(int i=0;i<13;i++){
@@ -97,8 +109,11 @@ public class Omi{
 			System.out.printf("%d ",p4[i]);
 		}
 		System.out.printf("\n\n");
+		*/
 
-		System.out.printf("Trumph is %d\n",trumph);
+		jsonMessage = jsonMessage + "] , \"showHand\" : true, \"showCards\" : true , \"message\" : \"Starting a new hand. Trumph is "+trumphName+". \"}'";
+		//System.out.printf("Trumph is %d\n",trumph);
+		return jsonMessage;
 	}
 
 }
