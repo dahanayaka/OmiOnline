@@ -10,7 +10,8 @@ public class Omi{
 
 
 	public HttpServletResponse[] players = new HttpServletResponse[4];
-
+	
+	Integer []pack;
 	int [][]hands = new int[4][13];
 
 
@@ -22,6 +23,7 @@ public class Omi{
 
     public Omi(){
         this.initPack();
+        this.shuffle();
     }
 
 	public synchronized void addPlayer(HttpServletResponse player, int plyernmber){
@@ -68,7 +70,6 @@ public class Omi{
 	}
 
 	public String deal(int player){
-		Integer []pack = this.shuffle();
 
 		String jsonMessage = "{\"cards\":[";
 
