@@ -116,5 +116,15 @@ public class Omi{
 		//System.out.printf("Trumph is %d\n",trumph);
 		return jsonMessage;
 	}
+	
+	public boolean validate(int lead, int player, int card){
+		if(card/100 == lead) return true;
+		else{
+			for(int i=0;i<13;i++){
+				if(hands[player][i]/100 == lead) return false;
+			}
+			return true;
+		}
+	}
 
 }
