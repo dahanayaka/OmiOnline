@@ -10,7 +10,8 @@ public class Omi{
 
 
 	public HttpServletResponse[] players = new HttpServletResponse[4];
-
+	
+	Integer []pack;
 	int [][]hands = new int[4][13];
 
 
@@ -22,6 +23,7 @@ public class Omi{
 
     public Omi(){
         this.initPack();
+        this.shuffle();
     }
 
 	public synchronized void addPlayer(HttpServletResponse player, int plyernmber){
@@ -68,7 +70,6 @@ public class Omi{
 	}
 
 	public String deal(int player){
-		Integer []pack = this.shuffle();
 
 		String jsonMessage = "{\"cards\":[";
 
@@ -114,6 +115,16 @@ public class Omi{
 		jsonMessage = jsonMessage + "] , \"showHand\" : true, \"showCards\" : true , \"message\" : \"Starting a new hand. Trumph is "+trumphName+". \"}'";
 		//System.out.printf("Trumph is %d\n",trumph);
 		return jsonMessage;
+	}
+	
+	public boolean validate(int lead, int player, int card){
+		if(card/100 == lead) return true;
+		else{
+			for(int i=0;i<13;i++){
+				if(hands[player][i]/100 == lead) return false;
+			}
+			return true;
+		}
 	}
 
 }
